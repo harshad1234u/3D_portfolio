@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && vite build && node scripts/copy-404.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
-    "strip-meta": "node scripts/strip-metadata.mjs"
+    "strip-meta": "node scripts/strip-metadata.mjs",
+    "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "^5.3.0",

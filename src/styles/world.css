@@ -1,0 +1,157 @@
+/* 3D view: fixed canvas behind scrolling content panels. */
+
+.is-3d body {
+  background: var(--sky-indigo);
+}
+
+.world-canvas {
+  position: fixed !important;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Floating minimal nav. */
+.site-header--3d {
+  position: fixed;
+  inset: 12px var(--gutter) auto;
+  z-index: 20;
+  padding: 0.5rem 1.1rem;
+  background: rgb(27 26 46 / 0.72);
+  border: 1px solid rgb(246 235 221 / 0.12);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+}
+@media (max-width: 640px) {
+  /* One scrollable row on phones so the nav never covers the world. */
+  .site-header--3d {
+    position: fixed;
+    flex-wrap: nowrap;
+    inset: 8px 8px auto;
+    padding: 0.35rem 0.8rem;
+  }
+  .site-header--3d nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .site-header--3d ul {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+}
+
+.world-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* Each section is a "station"; the gap after it is open sky the camera flies through. */
+.station {
+  position: relative;
+  width: min(560px, calc(100% - 2 * var(--gutter)));
+  margin: 0 0 90vh var(--gutter);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: rgb(27 26 46 / 0.86);
+  border: 1px solid rgb(246 235 221 / 0.1);
+  border-radius: 20px;
+  scroll-margin-top: 20vh;
+}
+.station > h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  color: var(--brass);
+}
+
+.station--top {
+  width: auto;
+  min-height: 100svh;
+  margin: 0 0 40vh;
+  padding: 30svh var(--gutter) 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.station--top h1 {
+  margin: 0;
+  font-size: clamp(3rem, 11vw, 8rem);
+  color: var(--paper);
+  text-shadow: 0 2px 30px rgb(27 26 46 / 0.45);
+}
+.station--top .hero-role,
+.station--top .hero-college {
+  max-width: 34ch;
+  text-shadow: 0 1px 14px rgb(27 26 46 / 0.6);
+}
+.station--top .hero-role {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+}
+.station--top .hero-college {
+  margin: 0.75rem 0 0;
+  font-weight: 600;
+}
+
+/* Projects need room for the card grid (replaced by the pinned gallery in M4). */
+.station--projects {
+  width: min(1200px, calc(100% - 2 * var(--gutter)));
+  margin-inline: auto;
+}
+
+.station--contact {
+  margin-bottom: 30vh;
+}
+
+.world-footer {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  border: 0;
+  background: rgb(11 10 36 / 0.7);
+}
+
+/* Loader */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.25rem;
+  background: radial-gradient(ellipse at 50% 120%, #f2a3a0 0%, #7c6baf 40%, var(--sky-indigo) 75%);
+  transition: opacity 700ms ease, visibility 700ms;
+}
+.loader--out {
+  opacity: 0;
+  visibility: hidden;
+}
+.loader--out .loader-name,
+.loader--out .loader-label {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.loader-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 7vw, 4rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.loader-horizon {
+  width: min(320px, 70vw);
+  height: 2px;
+  background: rgb(246 235 221 / 0.2);
+  overflow: hidden;
+}
+.loader-horizon span {
+  display: block;
+  height: 100%;
+  background: var(--sky-apricot);
+  transform-origin: left;
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.loader-label {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  color: rgb(246 235 221 / 0.85);
+}

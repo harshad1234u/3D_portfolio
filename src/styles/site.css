@@ -40,8 +40,34 @@ h3 {
   font-weight: 600;
 }
 
-#main:focus {
+/* Programmatic focus targets (skip link, nav) shouldn't draw a giant ring. */
+#main:focus,
+section[tabindex='-1']:focus {
   outline: none;
+}
+
+.notice {
+  margin: 0;
+  padding: 0.75rem var(--gutter);
+  background: var(--brass);
+  color: var(--ink);
+  font-weight: 600;
+  text-align: center;
+}
+
+.view-toggle {
+  padding: 0.3rem 0.9rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--paper);
+  background: transparent;
+  border: 1px solid rgb(246 235 221 / 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.view-toggle:hover {
+  border-color: var(--brass);
+  color: var(--brass);
 }
 
 /* Header */
@@ -71,6 +97,7 @@ h3 {
   font-size: 1.15rem;
   color: var(--paper);
   text-decoration: none;
+  white-space: nowrap;
 }
 .site-header ul {
   display: flex;
