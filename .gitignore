@@ -1,0 +1,10 @@
+node_modules
+dist
+*.map
+.DS_Store
+# privacy: never commit personal documents, private notes or secrets
+*.pdf
+resume*
+cv*
+private/
+.env*

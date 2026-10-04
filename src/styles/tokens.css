@@ -1,0 +1,18 @@
+:root {
+  /* Dusk Voyage palette — see PLAN.md §3 */
+  --sky-apricot: #ffc9a3;
+  --sky-rose: #f2a3a0;
+  --sky-violet: #7c6baf;
+  --sky-indigo: #1e1b4b;
+  --clay: #d9774f;
+  --paper: #f6ebdd;
+  --sage: #9db59a;
+  --brass: #e2b15c;
+  --ink: #1b1a2e;
+
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-ui: 'Instrument Sans Variable', system-ui, sans-serif;
+
+  --gutter: clamp(16px, 4vw, 48px);
+  color-scheme: dark;
+}
