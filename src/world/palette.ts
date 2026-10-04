@@ -1,4 +1,14 @@
 import { Color, MathUtils, Vector3 } from 'three'
+import { clay } from './materials'
+
+// Emissive materials whose glow rises at night (bloom picks them up).
+export const glow = {
+  window: clay('#ffe2b0', { emissive: '#ffb45e', emissiveIntensity: 0.4 }),
+  crystal: clay('#c9b2f5', { emissive: '#9f80f0', emissiveIntensity: 0.4, rim: 1.2 }),
+  lamp: clay('#fff1d6', { emissive: '#ffcf86', emissiveIntensity: 1.2 }),
+  lantern: clay('#ffe7c2', { emissive: '#ffb86b', emissiveIntensity: 0.6 }),
+}
+const GLOW_BASE = { window: [0.35, 2.2], crystal: [0.4, 1.3], lamp: [1.1, 2.6], lantern: [0.5, 2.4] } as const
 
 // Sky and light keyframes along the voyage (station 0 = sunset at the Hero, 7 = night at Contact).
 type Key = {
@@ -50,5 +60,9 @@ export function samplePalette(s: number) {
   const el = MathUtils.lerp(a.elevation, b.elevation, t)
   palette.lightDir.set(Math.sin(AZIMUTH) * Math.cos(el), Math.sin(el), -Math.cos(AZIMUTH) * Math.cos(el)).normalize()
   palette.night = MathUtils.smoothstep(s, 4.5, 6.5)
+  for (const k of Object.keys(glow) as (keyof typeof glow)[]) {
+    const [day, night] = GLOW_BASE[k]
+    glow[k].emissiveIntensity = MathUtils.lerp(day, night, MathUtils.smoothstep(s, 3, 6.5))
+  }
   return palette
 }

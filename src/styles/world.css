@@ -155,3 +155,36 @@
   letter-spacing: 0.08em;
   color: rgb(246 235 221 / 0.85);
 }
+
+/* Magnetic cursor (added by the world; fine pointers only). */
+.has-cursor,
+.has-cursor a,
+.has-cursor button {
+  cursor: none;
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: 50%;
+  transition: opacity 200ms ease;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--brass);
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgb(246 235 221 / 0.75);
+  transition: opacity 200ms ease, border-color 200ms ease, background-color 200ms ease;
+}
+.cursor-ring--active {
+  border-color: var(--brass);
+  background: rgb(226 177 92 / 0.12);
+}

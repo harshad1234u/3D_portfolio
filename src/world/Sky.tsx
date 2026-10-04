@@ -1,7 +1,9 @@
 import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BackSide, BufferAttribute, BufferGeometry, Color, Group, PointsMaterial, ShaderMaterial, Vector3 } from 'three'
+import { U } from './materials'
 import { palette } from './palette'
+import { rng } from './rng'
 
 const vertexShader = /* glsl */ `
   varying vec3 vDir;
@@ -17,6 +19,8 @@ const fragmentShader = /* glsl */ `
   uniform vec3 uBottom;
   uniform vec3 uSunColor;
   uniform vec3 uSunDir;
+  uniform float uTime;
+  uniform float uRays;
   varying vec3 vDir;
   void main() {
     vec3 dir = normalize(vDir);
@@ -25,6 +29,14 @@ const fragmentShader = /* glsl */ `
     col = mix(uBottom, col, smoothstep(-0.35, 0.02, h));
     float sd = max(dot(dir, uSunDir), 0.0);
     col += uSunColor * (pow(sd, 900.0) * 1.2 + pow(sd, 14.0) * 0.3);
+    // Crepuscular rays: soft angular streaks fanning out around the sun, slowly turning.
+    vec3 t1 = normalize(cross(uSunDir, vec3(0.0, 1.0, 0.0)));
+    vec3 t2 = cross(t1, uSunDir);
+    vec3 q = dir - uSunDir * dot(dir, uSunDir);
+    float ang = atan(dot(q, t2), dot(q, t1));
+    float streaks = pow(0.5 + 0.5 * sin(ang * 11.0 + sin(ang * 4.0 + uTime * 0.05) * 2.5), 5.0);
+    float near = smoothstep(0.55, 0.98, dot(dir, uSunDir)) * smoothstep(-0.15, 0.1, h);
+    col += uSunColor * streaks * near * 0.22 * uRays;
     gl_FragColor = vec4(col, 1.0);
     #include <colorspace_fragment>
   }
@@ -45,18 +57,10 @@ const material = new ShaderMaterial({
     uBottom: { value: new Color() },
     uSunColor: { value: new Color() },
     uSunDir: { value: new Vector3() },
+    uTime: U.uTime,
+    uRays: { value: 1 },
   },
 })
-
-// Seeded PRNG (mulberry32): same sky on every visit, no visible patterns.
-function rng(seed: number) {
-  return () => {
-    seed = (seed + 0x6d2b79f5) | 0
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
 
 const stars = (() => {
   const pos = new Float32Array(STAR_COUNT * 3)
@@ -90,6 +94,7 @@ export default function Sky() {
     u.uBottom.value.copy(palette.bottom)
     u.uSunColor.value.copy(palette.sun)
     u.uSunDir.value.copy(palette.lightDir)
+    u.uRays.value = 1 - palette.night // sun rays only; the moon gets glow, not rays
     stars.mat.opacity = palette.night
     stars.mat.visible = palette.night > 0.01
   })

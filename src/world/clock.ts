@@ -8,24 +8,29 @@ import { stationAt } from '../scroll/station'
 import { SECTIONS } from '../sections'
 
 // One clock: GSAP's ticker drives Lenis, then the station value, then the R3F render (frameloop="never").
-export const scrollState = { s: 0 }
+// s = station (0..7), v = scroll velocity in px/frame (drives wind, spin, drift).
+export const scrollState = { s: 0, v: 0 }
 
-// A section counts as "arrived" when its top is this far down the viewport.
-// Portrait screens arrive with the panel in the lower half so the island stays visible above it.
-const arriveAt = () => (innerHeight > innerWidth ? 0.55 : 0.2)
+// A section "arrives" when its top is this far down the viewport, and the camera "departs"
+// for the next island once its bottom has risen to this fraction of the viewport.
+// Portrait screens keep the panel in the lower half so the island stays visible above it.
+const portrait = () => innerHeight > innerWidth
+const arriveAt = () => (portrait() ? 0.55 : 0.2)
+const departAt = () => (portrait() ? 0.4 : 0.55)
 
 export function startClock(reduced: boolean) {
   gsap.registerPlugin(ScrollTrigger)
   const lenis = reduced ? null : new Lenis({ autoRaf: false, lerp: 0.09 })
 
   let offsets: number[] = []
+  let departs: number[] = []
   let maxScroll = 0
   const measure = () => {
     const arrive = innerHeight * arriveAt()
-    offsets = SECTIONS.map((d) => {
-      const el = document.getElementById(d.id)
-      return el ? Math.max(0, el.getBoundingClientRect().top + scrollY - arrive) : 0
-    })
+    const depart = innerHeight * departAt()
+    const rects = SECTIONS.map((d) => document.getElementById(d.id)?.getBoundingClientRect())
+    offsets = rects.map((r) => (r ? Math.max(0, r.top + scrollY - arrive) : 0))
+    departs = rects.map((r) => (r ? Math.max(0, r.bottom + scrollY - depart) : 0))
     maxScroll = document.documentElement.scrollHeight - innerHeight
   }
   ScrollTrigger.addEventListener('refresh', measure)
@@ -34,9 +39,13 @@ export function startClock(reduced: boolean) {
 
   lenis?.on('scroll', ScrollTrigger.update)
 
+  let lastY = scrollY
   const tick = (time: number) => {
     lenis?.raf(time * 1000)
-    scrollState.s = stationAt(lenis ? lenis.scroll : scrollY, offsets, maxScroll)
+    const y = lenis ? lenis.scroll : scrollY
+    scrollState.v = y - lastY
+    lastY = y
+    scrollState.s = stationAt(y, offsets, departs, maxScroll)
     // With frameloop="never", R3F takes this timestamp in seconds (it becomes clock.elapsedTime).
     advance(time)
   }

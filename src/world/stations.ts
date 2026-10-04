@@ -12,8 +12,13 @@ export const ISLANDS: [number, number, number][] = [
   [0, 0, -240], // contact — harbour
 ]
 
-// Camera stations. Landscape: island sits right of centre so the left-hand panel never covers it.
-// Portrait: camera pulls back and centres the island above the panels.
+const UP = new Vector3(0, 1, 0)
+
+// Camera stations, with an extra control point between each pair that swings the path
+// sideways and up, so flights arc around the scenery instead of gliding in straight lines.
+// Station i sits at curve parameter t = i / (ISLANDS.length - 1) (even control points).
+// Landscape: island sits right of centre so the left-hand panel never covers it.
+// Portrait: camera pulls back and frames the island above the panels.
 export function cameraCurves(portrait: boolean) {
   const pos: Vector3[] = []
   const look: Vector3[] = []
@@ -27,8 +32,23 @@ export function cameraCurves(portrait: boolean) {
       look.push(new Vector3(x - 4.5, y + (hero ? 3 : 1.5), z))
     }
   })
+
+  const arc = portrait ? 6 : 11
+  const withArcs = (pts: Vector3[], swing: number, lift: number) =>
+    pts.flatMap((p, i) => {
+      if (i === pts.length - 1) return [p]
+      const q = pts[i + 1]
+      const side = new Vector3().subVectors(q, p).cross(UP).normalize()
+      const mid = p
+        .clone()
+        .lerp(q, 0.5)
+        .addScaledVector(side, swing * (i % 2 ? -1 : 1))
+        .addScaledVector(UP, lift)
+      return [p, mid]
+    })
+
   return {
-    pos: new CatmullRomCurve3(pos, false, 'centripetal'),
-    look: new CatmullRomCurve3(look, false, 'centripetal'),
+    pos: new CatmullRomCurve3(withArcs(pos, arc, 4), false, 'centripetal'),
+    look: new CatmullRomCurve3(withArcs(look, arc * 0.35, 1), false, 'centripetal'),
   }
 }

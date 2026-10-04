@@ -30,3 +30,18 @@ Approved answers to `PLAN.md` §0, plus changes. Where this file and `PLAN.md` d
 - **About copy:** written from the brief only: third-year CSE student, K. Ramakrishnan College of Technology, aspiring AI / cybersecurity / full-stack developer. Nothing else invented.
 - **Privacy:** only the email, the five profile links and project repo links. No phone, city, marks, CGPA, resume file, or other personal data anywhere.
 - **Milestone reports:** each ends with what was built, what was verified (real command output), and remaining placeholders.
+
+## After M2
+- **3D budget: 400 kB gzip** for the 3D code (world chunk + lazily loaded postprocessing chunk). Postprocessing loads only after the first frame, on idle, and only on mid/high tiers.
+- `npm test` runs in CI. drei stays installed. Shadow map type is set explicitly (`PCFShadowMap`); R3F sets the removed soft type whenever `shadows` is a boolean, so it is always passed as an object.
+- The remaining console warning, `THREE.Clock … deprecated`, comes from `new THREE.Clock()` inside R3F's own store; not fixable without patching the library.
+
+## M2.5 visual upgrade
+- **No video or web footage**, ever. Everything is real-time 3D: procedural geometry and shaders only (no downloaded models, so no third-party licences to credit yet).
+- Stylized look: soft 3-band toon shading (darkest band 0.58, never black), shared rim light, baked vertex-colour AO; per-tier bloom on emissive lights.
+- Performance decisions (measured on Intel UHD integrated graphics, 1440 px):
+  - Bloom at half resolution, 5 mip levels, 8-bit buffer (full-res default cost ~30 fps).
+  - High tier uses 2× MSAA in the composer (4× cost ~14 fps).
+  - Shadows re-render every other frame (motion is slow enough to hide it), always on frames where the map is missing.
+  - Static landmark parts are merged into one mesh per material at mount (`Static.tsx`): draw calls 240 → 163.
+  - Adaptive quality steps down below 52 fps (target 60) and never steps back up after a step down.

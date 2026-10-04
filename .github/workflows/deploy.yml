@@ -28,6 +28,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm test
       - run: npm run build
         env:
           # Testing on harshad1234u.github.io/harshad-portfolio/. At launch (custom domain) change to '/'.

@@ -41,6 +41,19 @@ test('steps up after sustained headroom, at most twice', () => {
   assert.deepEqual(run(m, 60, 30), ['up', 'up'])
 })
 
+test('sustained 45–52 fps steps down (target is 60)', () => {
+  const m = newMonitor()
+  run(m, 60, 3)
+  assert.deepEqual(run(m, 48, 1.6), ['down'])
+})
+
+test('after stepping down it never steps back up (no flip-flop)', () => {
+  const m = newMonitor()
+  run(m, 60, 3)
+  run(m, 30, 1.6)
+  assert.deepEqual(run(m, 120, 30), [])
+})
+
 test('stepTier clamps at the ends', () => {
   assert.equal(stepTier('low', 'down'), 'low')
   assert.equal(stepTier('high', 'up'), 'high')
