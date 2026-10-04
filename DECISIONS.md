@@ -18,7 +18,7 @@ Approved answers to `PLAN.md` §0, plus changes. Where this file and `PLAN.md` d
    - Prompt engineering → XtraGrad experience entry.
    - PostgreSQL via Supabase (CarbonIQ, AI Quiz App); Firebase via Firestore (PhishCatch).
 5. Tooling: if TypeScript 7 breaks eslint or Vite, use the latest 6.x and report it. **Status: TypeScript 6.0.3 is installed** because `typescript-eslint@8.71.0` has the peer range `typescript >=4.8.4 <6.1.0`. Move to TS 7 when typescript-eslint supports it.
-6. `harshad.me` is owned. **No `public/CNAME` until the launch milestone (M9).** Until then deploy and test on the github.io address; the workflow sets `VITE_BASE=/harshad-portfolio/`. At launch: add `public/CNAME`, set `VITE_BASE` to `/` in `.github/workflows/deploy.yml`.
+6. `harshad.me` is owned. ~~GitHub Pages with `public/CNAME` at launch~~: superseded by **Hosting (M2.7)** below. Hosting is Vercel, with no CNAME file.
 
 ## Amendments to the plan
 - **No placeholder text on the public site, ever.**
@@ -63,3 +63,19 @@ This section replaces the visual direction of `PLAN.md` §3 (palette, type, surf
   - It restarts its grace period when the scene recompiles (postprocessing arrives, tier switch), so one-off shader-compile hitches are not counted as a slow device.
   - Panel reveals animate opacity and position only, with no CSS blur. The project grid reveals as one block; 17 separately animated cards caused a one-time dip that made the monitor step down.
 - **OG image:** `public/og.png` (1200×630) is rendered from the real hero scene with the site's own fonts, then metadata is stripped. The OG/Twitter meta tags need the final absolute URL, so they are added in M8.
+
+## Hosting (M2.7): Vercel
+This section replaces `PLAN.md` §15 (GitHub Pages).
+- **Repo:** `https://github.com/harshad1234u/3D_portfolio`. Vercel's Git integration deploys `main` to production and every other branch or PR to a preview URL. Dashboard and DNS steps are in the README.
+- **Base path:** Vite's default `/`. The `VITE_BASE` logic, the Pages deploy workflow and the `404.html` copy step are removed.
+- **No SPA rewrite:** the site has no client-side routes (only `#section` hashes and `?query` options), so unknown paths correctly return 404.
+- **`vercel.json`** (checked against the official schema at `openapi.vercel.sh/vercel.json`):
+  - `framework: vite`, `installCommand: npm ci`, `buildCommand: npm run build`, `outputDirectory: dist`.
+  - **Cache:** `/assets/*` (hashed JS, CSS and fonts) is `public, max-age=31536000, immutable`; `/` and `/index.html` are `no-cache`.
+  - **Security headers:** `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `X-Frame-Options: DENY`.
+  - **Content-Security-Policy:** `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`. Tested with the 3D view (all tiers, both themes, postprocessing, nav flights, clipboard copy) and the Simple view: zero violations.
+    - To keep `font-src 'self'`, Vite never inlines fonts as `data:` URIs (`assetsInlineLimit`).
+    - Adding any third-party script, font or embed later means updating this policy.
+- **Node:** `.nvmrc` is 22, and CI uses it. `engines.node` is `^20.19.0 || ^22.12.0`: the floor is Vite 8's minimum, and the cap keeps Vercel on 22.x. Vercel lets `engines` override the dashboard setting, and an open range like `>=20.19` would deploy on 24.x. Set the Vercel project's Node.js version to 22.x as well. On Node 24 locally, npm prints an `EBADENGINE` warning only.
+- **Images:** `strip-meta` (sharp) runs locally before committing images. It is not part of the build, which needs no native image tooling, secrets or local paths.
+- **Project screenshots:** these move from `public/projects/` to `src/assets/projects/<slug>.png`, bundled through `import.meta.glob`. A missing screenshot no longer makes a request, so there are no more 404s in the console. Screenshots get hashed, immutable URLs, and file names are matched case-insensitively against the lowercase slug.

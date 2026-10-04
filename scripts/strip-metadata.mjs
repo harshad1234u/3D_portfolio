@@ -1,6 +1,6 @@
-// Re-encodes every image under public/ so EXIF/XMP/ICC metadata is dropped.
-// sharp discards metadata unless asked to keep it; rotate() bakes in EXIF orientation first.
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+// Re-encodes every image under public/ and src/assets/ so EXIF/XMP/ICC metadata is dropped.
+// Run locally before committing images (not part of the build). sharp discards metadata unless asked to keep it; rotate() bakes in EXIF orientation first.
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, extname } from 'node:path'
 import sharp from 'sharp'
 
@@ -14,7 +14,9 @@ function* walk(dir) {
   }
 }
 
-for (const file of walk('public')) {
-  writeFileSync(file, await sharp(readFileSync(file)).rotate().toBuffer())
-  console.log('stripped', file)
+for (const dir of ['public', 'src/assets'].filter((d) => existsSync(d))) {
+  for (const file of walk(dir)) {
+    writeFileSync(file, await sharp(readFileSync(file)).rotate().toBuffer())
+    console.log('stripped', file)
+  }
 }

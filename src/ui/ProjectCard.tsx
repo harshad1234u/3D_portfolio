@@ -1,22 +1,29 @@
-import { useState } from 'react'
 import type { Project } from '../data/content'
 import ProjectCover from './ProjectCover'
 
+// Screenshots are bundled at build time from src/assets/projects/<slug>.png (hashed, long-cached).
+// A project without one shows its generated cover and makes no request.
+const SHOTS = Object.fromEntries(
+  Object.entries(import.meta.glob<string>('../assets/projects/*.png', { eager: true, import: 'default' })).map(([path, url]) => [
+    path.split('/').pop()!.replace(/\.png$/, '').toLowerCase(),
+    url,
+  ]),
+)
+
 export default function ProjectCard({ project, index, total }: { project: Project; index: number; total: number }) {
-  const [shot, setShot] = useState(true)
+  const shot = SHOTS[project.slug]
   return (
     <article className="card" id={`project-${project.slug}`} aria-labelledby={`project-${project.slug}-title`}>
       <div className="card-media">
         <ProjectCover project={project} />
         {shot && (
           <img
-            src={`${import.meta.env.BASE_URL}projects/${project.slug}.png`}
+            src={shot}
             alt={`Screenshot of ${project.name}`}
             loading="lazy"
             decoding="async"
             width={1600}
             height={1000}
-            onError={() => setShot(false)}
           />
         )}
       </div>
