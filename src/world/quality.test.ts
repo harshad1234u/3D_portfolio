@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { newMonitor, sampleFrame, stepTier } from './quality.ts'
+import { isIntegratedGpu, newMonitor, regrace, sampleFrame, stepTier } from './quality.ts'
 
 // Feed `seconds` of frames at `fps`, collect decisions.
 function run(m: ReturnType<typeof newMonitor>, fps: number, seconds: number) {
@@ -52,6 +52,27 @@ test('after stepping down it never steps back up (no flip-flop)', () => {
   run(m, 60, 3)
   run(m, 30, 1.6)
   assert.deepEqual(run(m, 120, 30), [])
+})
+
+test('integrated GPUs are recognised from the renderer string', () => {
+  for (const r of [
+    'ANGLE (Intel, Intel(R) UHD Graphics 620 (0x00005917) Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    'ANGLE (Intel, Intel(R) Iris(R) Xe Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    'ANGLE (AMD, AMD Radeon(TM) Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)',
+    'Mali-G78',
+  ])
+    assert.ok(isIntegratedGpu(r), r)
+  for (const r of ['ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)', 'AMD Radeon RX 6700 XT', ''])
+    assert.ok(!isIntegratedGpu(r), r)
+})
+
+test('regrace ignores a compile hitch but keeps the step-down history', () => {
+  const m = newMonitor()
+  run(m, 60, 3)
+  run(m, 30, 1.6) // one step down
+  regrace(m)
+  assert.deepEqual(run(m, 20, 2.9), [])
+  assert.deepEqual(run(m, 120, 30), []) // still never steps back up
 })
 
 test('stepTier clamps at the ends', () => {

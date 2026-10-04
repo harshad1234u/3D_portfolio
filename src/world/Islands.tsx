@@ -17,7 +17,7 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import Landmarks from './Landmarks'
 import { bakeAO, clay } from './materials'
-import { glow } from './palette'
+import { C, glow } from './palette'
 import { rng } from './rng'
 import { ISLANDS } from './stations'
 
@@ -41,7 +41,7 @@ function islandGeometries(seed: number) {
     p.setXYZ(i, x * w, y - Math.sin(a * 4 + seed) * 0.5 * depth, z * w)
   }
   rock.computeVertexNormals()
-  bakeAO(rock, 0.15, { top: '#f0a578', bottom: '#b0607c' })
+  bakeAO(rock, 0.15, { top: C.rockTop, bottom: C.rockBottom })
 
   const cap = new CylinderGeometry(6.1, 5.95, 0.9, 16, 1)
   const c = cap.attributes.position
@@ -52,7 +52,7 @@ function islandGeometries(seed: number) {
   }
   cap.translate(0, -0.05, 0)
   cap.computeVertexNormals()
-  bakeAO(cap, 0.3, { top: '#c2dca8', bottom: '#8fb07e' })
+  bakeAO(cap, 0.3, { top: C.grassTop, bottom: C.grassBottom })
   return { rock, cap }
 }
 
@@ -80,15 +80,15 @@ const g = {
 }
 
 const m = {
-  wood: clay('#9a6a52', { vertexColors: true }),
+  wood: clay(C.wood, { vertexColors: true }),
   leaf: clay('#ffffff', { vertexColors: true, wind: true, rim: 0.9 }),
-  tuft: clay('#bcd8a4', { vertexColors: true, wind: true, rim: 0.5 }),
-  stone: clay('#e3c3ad', { vertexColors: true }),
-  wall: clay('#f6ebdd', { vertexColors: true }),
-  roof: clay('#d9774f', { vertexColors: true }),
+  tuft: clay(C.tuft, { vertexColors: true, wind: true, rim: 0.5 }),
+  stone: clay(C.stone, { vertexColors: true }),
+  wall: clay(C.wall, { vertexColors: true }),
+  roof: clay(C.roof, { vertexColors: true }),
 }
 
-const LEAF = ['#a9c79a', '#8fb38a', '#c4d49a', '#e9a76f', '#f2b48a'].map((c) => new Color(c))
+const LEAF = C.leaf.map((c) => new Color(c))
 
 // What each island carries, kept clear of its landmark (inner radius) and walkways.
 type Spec = { inner: number; trees: number; tufts: number; rocks: number; houses: number; crystals: number; clear?: (x: number, z: number) => boolean }

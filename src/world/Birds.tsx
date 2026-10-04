@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useRef } from 'react'
 import { BufferGeometry, DoubleSide, Float32BufferAttribute, InstancedMesh, Object3D } from 'three'
 import { clay } from './materials'
+import { C } from './palette'
 import { ISLANDS } from './stations'
 
 // A few small flocks circling islands; wings flap in the vertex shader.
@@ -30,7 +31,7 @@ function birdGeometry() {
 }
 
 const geo = birdGeometry()
-const mat = clay('#5a4870', { flap: true, rim: 0.4 })
+const mat = clay(C.bird, { flap: true, rim: 0.4 })
 mat.side = DoubleSide
 const d = new Object3D()
 

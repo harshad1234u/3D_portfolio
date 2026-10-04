@@ -23,6 +23,7 @@ Requires Node 22.6+ for `npm test` (runs TypeScript directly; developed on Node 
 | `?simple` or `?view=simple` | Simple view (no 3D code is downloaded) |
 | `?view=3d` | 3D view, even on a software (CPU) WebGL renderer |
 | `?quality=low\|mid\|high` | Pin the render tier instead of adapting |
+| `?theme=a\|b` | Colour theme: `a` Blue hour (default), `b` Graphite and teal |
 
 ## Deployment
 

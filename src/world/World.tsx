@@ -11,7 +11,8 @@ import { updateLandmarks } from './Landmarks'
 import { U } from './materials'
 import { palette, samplePalette } from './palette'
 import Particles from './Particles'
-import { newMonitor, sampleFrame, stepTier, TIERS, type Tier } from './quality'
+import { gpuRenderer } from '../view'
+import { isIntegratedGpu, newMonitor, regrace, sampleFrame, stepTier, TIERS, type Tier } from './quality'
 import { startReveal } from './reveal'
 import Rig from './Rig'
 import Sky from './Sky'
@@ -33,16 +34,19 @@ const pinned = forcedTier !== null && TIERS.includes(forcedTier)
 
 // Phones and small screens start low and never go above mid (lighter scene, battery).
 const small = matchMedia('(pointer: coarse)').matches || innerWidth < 768
+// Integrated GPUs (Intel UHD/Iris, AMD APUs) start on mid and stay at most mid.
+const integrated = isIntegratedGpu(gpuRenderer)
 
 function initialTier(): Tier {
   if (pinned) return forcedTier!
   if (small) return 'low'
+  if (integrated) return 'mid'
   return (navigator.hardwareConcurrency ?? 4) <= 4 ? 'mid' : 'high'
 }
 
-const clampTier = (t: Tier): Tier => (small && t === 'high' ? 'mid' : t)
+const clampTier = (t: Tier): Tier => ((small || integrated) && t === 'high' ? 'mid' : t)
 
-const MOON_RIM = new Color('#7f86c8')
+const MOON_RIM = new Color('#9cb4e8')
 
 // Lights, fog, palette and the shared shader uniforms, all driven by scroll each frame.
 function Atmosphere({ shadowSize }: { shadowSize: number }) {
@@ -89,9 +93,9 @@ function Atmosphere({ shadowSize }: { shadowSize: number }) {
 
   return (
     <>
-      <fog ref={fog} attach="fog" args={['#ffb48a', 45, 230]} />
+      <fog ref={fog} attach="fog" args={['#bfd7ff', 45, 230]} />
       <hemisphereLight ref={hemi} intensity={1.35} />
-      <ambientLight ref={amb} intensity={0.25} color="#ffe9dc" />
+      <ambientLight ref={amb} intensity={0.25} color="#e6eeff" />
       <directionalLight
         ref={sun}
         castShadow={shadowSize > 0}
@@ -109,8 +113,11 @@ function Atmosphere({ shadowSize }: { shadowSize: number }) {
   )
 }
 
-function QualityMonitor({ onStep }: { onStep: (d: 'down' | 'up') => void }) {
+// `epoch` changes when the scene recompiles (postprocessing arrives, tier switch): those one-off
+// shader-compile hitches get a fresh grace period instead of counting as a slow device.
+function QualityMonitor({ epoch, onStep }: { epoch: string; onStep: (d: 'down' | 'up') => void }) {
   const m = useRef(newMonitor())
+  useEffect(() => regrace(m.current), [epoch])
   useFrame((_, dt) => {
     const d = sampleFrame(m.current, dt)
     if (d) onStep(d)
@@ -160,7 +167,7 @@ export default function World({ onFail }: { onFail: () => void }) {
         gl.domElement.addEventListener('webglcontextlost', onFail, { once: true })
       }}
     >
-      {!pinned && <QualityMonitor onStep={(d) => setTier((t) => clampTier(stepTier(t, d)))} />}
+      {!pinned && <QualityMonitor epoch={`${tier}-${postReady}`} onStep={(d) => setTier((t) => clampTier(stepTier(t, d)))} />}
       <Atmosphere shadowSize={cfg.shadows} />
       <Sky />
       <Clouds key={`c-${tier}`} density={cfg.clouds} seaLayers={cfg.sea} />

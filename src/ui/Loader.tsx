@@ -34,7 +34,7 @@ export default function Loader() {
       <div className="loader-horizon" aria-hidden="true">
         <span style={{ transform: `scaleX(${stage / STAGES})` }} />
       </div>
-      <p className="loader-label">
+      <p className="loader-label mono">
         {LABELS[stage]} · {pct}%
       </p>
     </div>

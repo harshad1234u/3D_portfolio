@@ -12,26 +12,25 @@ import {
   type Material,
 } from 'three'
 import { clay, U } from './materials'
-import { glow, palette } from './palette'
+import { C, glow, palette } from './palette'
 import Static from './Static'
 
-const CANVAS_COLORS = ['#d9774f', '#7c6baf', '#9db59a']
-const MIST = new Color('#cfe3f0')
-const beamMat = new MeshBasicMaterial({ color: '#ffe0a8', transparent: true, opacity: 0, blending: AdditiveBlending, depthWrite: false, side: DoubleSide })
+const CANVAS_COLORS = [C.accent, C.steel, C.wall]
+const MIST = new Color(C.mist)
+const beamMat = new MeshBasicMaterial({ color: '#dce8ff', transparent: true, opacity: 0, blending: AdditiveBlending, depthWrite: false, side: DoubleSide })
 
 // One hand-composed set per section, built from primitives (no downloaded models).
 const mat = {
-  paper: clay('#f6ebdd'),
-  clay: clay('#d9774f'),
-  apricot: clay('#f2b48a'),
-  sage: clay('#a9c79a'),
-  plum: clay('#8f6aa8'),
-  brass: clay('#e2b15c', { rim: 1.5 }),
-  wood: clay('#9a6a52'),
-  stone: clay('#e3c3ad'),
+  white: clay(C.wall),
+  steel: clay(C.steel),
+  sage: clay(C.grassTop),
+  slate: clay(C.roof),
+  metal: clay(C.silver, { rim: 1.5 }),
+  wood: clay(C.wood),
+  stone: clay(C.stone),
   canvas: CANVAS_COLORS.map((c) => clay(c)),
-  bottle: clay('#cfe3d8', { rim: 2 }),
-  flag: [clay('#d9774f', { wave: true }), clay('#f6ebdd', { wave: true }), clay('#a9c79a', { wave: true }), clay('#f2b48a', { wave: true })],
+  bottle: clay('#cfe6f0', { rim: 2 }),
+  flag: [clay(C.accent, { wave: true }), clay(C.wall, { wave: true }), clay(C.accent2, { wave: true }), clay(C.stone, { wave: true })],
 }
 
 type MProps = { m: Material; p?: [number, number, number]; r?: [number, number, number]; s?: number | [number, number, number]; shadow?: boolean; children: ReactNode }
@@ -116,15 +115,15 @@ function Pier() {
       {/* tethered paper airship */}
       <group ref={ship} position={[6.5, 6.5, -4]} scale={0.85}>
         <Static>
-        <M m={mat.paper} s={[2.4, 1, 1]}>
+        <M m={mat.white} s={[2.4, 1, 1]}>
           <sphereGeometry args={[1, 20, 12]} />
         </M>
         {[-1.2, 0, 1.2].map((x) => (
-          <M key={x} m={mat.brass} p={[x, 0, 0]} r={[0, Math.PI / 2, 0]} s={[1, 1, 1]}>
+          <M key={x} m={mat.metal} p={[x, 0, 0]} r={[0, Math.PI / 2, 0]} s={[1, 1, 1]}>
             <torusGeometry args={[Math.sqrt(1 - (x / 2.4) ** 2) * 1.01, 0.03, 4, 28]} />
           </M>
         ))}
-        <M m={mat.clay} p={[-2.3, 0, 0]} r={[0, 0, Math.PI / 2]}>
+        <M m={mat.steel} p={[-2.3, 0, 0]} r={[0, 0, Math.PI / 2]}>
           <coneGeometry args={[0.55, 0.6, 4]} />
         </M>
         <M m={mat.wood} p={[0, -1.35, 0]}>
@@ -153,25 +152,25 @@ function Lighthouse() {
     <group position={[-0.6, 0.4, -0.4]}>
       <Static>
       {[0, 1, 2, 3].map((i) => (
-        <M key={i} m={i % 2 ? mat.clay : mat.paper} p={[0, 0.7 + i * 1.2, 0]}>
+        <M key={i} m={i % 2 ? mat.steel : mat.white} p={[0, 0.7 + i * 1.2, 0]}>
           <cylinderGeometry args={[0.95 - (i + 1) * 0.08, 0.95 - i * 0.08, 1.2, 12]} />
         </M>
       ))}
-      <M m={mat.brass} p={[0, 5.15, 0]} r={[Math.PI / 2, 0, 0]}>
+      <M m={mat.metal} p={[0, 5.15, 0]} r={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.75, 0.06, 6, 24]} />
       </M>
       <M m={glow.lamp} p={[0, 5.55, 0]} shadow={false}>
         <cylinderGeometry args={[0.5, 0.5, 0.75, 10]} />
       </M>
-      <M m={mat.clay} p={[0, 6.25, 0]}>
+      <M m={mat.steel} p={[0, 6.25, 0]}>
         <coneGeometry args={[0.72, 0.75, 10]} />
       </M>
       {/* keeper's cottage */}
       <group position={[2.4, 0, 0.6]} rotation={[0, -0.5, 0]}>
-        <M m={mat.paper} p={[0, 0.55, 0]}>
+        <M m={mat.white} p={[0, 0.55, 0]}>
           <boxGeometry args={[1.6, 1.1, 1.2]} />
         </M>
-        <M m={mat.clay} p={[0, 1.45, 0]} r={[0, Math.PI / 4, 0]}>
+        <M m={mat.steel} p={[0, 1.45, 0]} r={[0, Math.PI / 4, 0]}>
           <coneGeometry args={[1.25, 0.8, 4]} />
         </M>
         <M m={glow.window} p={[0.3, 0.6, 0.61]} shadow={false}>
@@ -205,7 +204,7 @@ function Easels() {
                 <cylinderGeometry args={[0.04, 0.05, 1.9, 5]} />
               </M>
             ))}
-            <M m={mat.brass} p={[0, 1.7, 0]}>
+            <M m={mat.metal} p={[0, 1.7, 0]}>
               <boxGeometry args={[1.5, 1.05, 0.08]} />
             </M>
             <M m={mat.canvas[i]} p={[0, 1.7, 0.05]}>
@@ -239,7 +238,7 @@ function Orrery() {
       <M m={mat.stone} p={[0, 0.5, 0]}>
         <cylinderGeometry args={[0.7, 1, 1, 8]} />
       </M>
-      <M m={mat.brass} p={[0, 1.8, 0]}>
+      <M m={mat.metal} p={[0, 1.8, 0]}>
         <cylinderGeometry args={[0.06, 0.06, 1.8, 6]} />
       </M>
       <M m={glow.lamp} p={[0, 3, 0]} shadow={false}>
@@ -250,10 +249,10 @@ function Orrery() {
         {[1.3, 2.1, 2.9].map((r, i) => (
           <group key={r} rotation={[0.25 * i, 0, 0.18 * (i - 1)]}>
             <Static>
-            <M m={mat.brass} r={[Math.PI / 2, 0, 0]} shadow={false}>
+            <M m={mat.metal} r={[Math.PI / 2, 0, 0]} shadow={false}>
               <torusGeometry args={[r, 0.05, 6, 64]} />
             </M>
-            <M m={[mat.clay, mat.sage, mat.plum][i]} p={[r, 0, 0]}>
+            <M m={[mat.steel, mat.sage, mat.slate][i]} p={[r, 0, 0]}>
               <sphereGeometry args={[0.22 + i * 0.05, 14, 10]} />
             </M>
             </Static>
@@ -272,7 +271,7 @@ function Beacons() {
           <M m={mat.stone} p={[0, 1.1, 0]}>
             <cylinderGeometry args={[0.35, 0.5, 2.2, 6]} />
           </M>
-          <M m={mat.brass} p={[0, 2.25, 0]}>
+          <M m={mat.metal} p={[0, 2.25, 0]}>
             <cylinderGeometry args={[0.55, 0.4, 0.15, 6]} />
           </M>
           <M m={glow.crystal} p={[0, 2.9, 0]} s={[1, 1.7, 1]} shadow={false}>
@@ -307,7 +306,7 @@ function Festival() {
           <M m={mat.wood} p={[0, 1.9, 0]}>
             <cylinderGeometry args={[0.06, 0.08, 3.8, 6]} />
           </M>
-          <M m={mat.brass} p={[0, 3.85, 0]}>
+          <M m={mat.metal} p={[0, 3.85, 0]}>
             <sphereGeometry args={[0.1, 8, 6]} />
           </M>
         </group>
@@ -335,13 +334,13 @@ function Archive() {
   return (
     <group position={[0, 0.4, 0]}>
       <Static>
-      <M m={mat.paper} p={[0, 1.4, 0]}>
+      <M m={mat.white} p={[0, 1.4, 0]}>
         <cylinderGeometry args={[1.3, 1.45, 2.8, 14]} />
       </M>
-      <M m={mat.clay} p={[0, 2.8, 0]}>
+      <M m={mat.steel} p={[0, 2.8, 0]}>
         <sphereGeometry args={[1.32, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
       </M>
-      <M m={mat.brass} p={[0, 4.2, 0]}>
+      <M m={mat.metal} p={[0, 4.2, 0]}>
         <coneGeometry args={[0.12, 0.5, 6]} />
       </M>
       <M m={glow.window} p={[0, 0.7, 1.42]} shadow={false}>
@@ -354,10 +353,10 @@ function Archive() {
           const a = (i / 6) * Math.PI * 2
           return (
             <group key={i} position={[Math.cos(a) * 2.6, Math.sin(i * 1.7) * 0.4, Math.sin(a) * 2.6]} rotation={[0, -a + Math.PI / 2, 0.1]}>
-              <M m={mat.brass}>
+              <M m={mat.metal}>
                 <boxGeometry args={[0.62, 0.82, 0.06]} />
               </M>
-              <M m={mat.paper} p={[0, 0, 0.035]}>
+              <M m={mat.white} p={[0, 0, 0.035]}>
                 <boxGeometry args={[0.5, 0.7, 0.02]} />
               </M>
             </group>
@@ -406,7 +405,7 @@ function Harbour() {
         <M m={mat.wood} p={[0, 1.1, 0]}>
           <cylinderGeometry args={[0.04, 0.04, 2.2, 5]} />
         </M>
-        <mesh material={mat.paper} position={[0.45, 1.35, 0]}>
+        <mesh material={mat.white} position={[0.45, 1.35, 0]}>
           <planeGeometry args={[0.8, 1.3]} />
         </mesh>
         </Static>

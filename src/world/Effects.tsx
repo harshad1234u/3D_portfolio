@@ -8,7 +8,7 @@ import { UnsignedByteType } from 'three'
 export default function Effects({ msaa }: { msaa: number }) {
   return (
     <EffectComposer multisampling={msaa} enableNormalPass={false} frameBufferType={UnsignedByteType}>
-      <Bloom mipmapBlur levels={5} resolutionScale={0.5} intensity={0.7} luminanceThreshold={0.8} luminanceSmoothing={0.25} radius={0.7} />
+      <Bloom mipmapBlur levels={5} resolutionScale={0.5} intensity={0.7} luminanceThreshold={0.92} luminanceSmoothing={0.25} radius={0.7} />
       <Vignette offset={0.32} darkness={0.42} />
     </EffectComposer>
   )

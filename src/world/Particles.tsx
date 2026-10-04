@@ -50,8 +50,8 @@ export default function Particles({ count }: { count: number }) {
         void main() {
           float d = length(gl_PointCoord - 0.5);
           float a = smoothstep(0.5, 0.0, d);
-          vec3 dust = vec3(1.0, 0.93, 0.85);
-          vec3 fly = vec3(1.0, 0.72, 0.38);
+          vec3 dust = vec3(0.93, 0.96, 1.0);
+          vec3 fly = vec3(0.72, 0.86, 1.0); // cool motes; windows and lanterns are the only warm lights
           float strength = mix(0.28, 1.1 * vTw, uNight);
           gl_FragColor = vec4(mix(dust, fly, uNight) * a * strength, 1.0);
           #include <colorspace_fragment>

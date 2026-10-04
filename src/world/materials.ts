@@ -13,7 +13,7 @@ import {
 export const U = {
   uTime: { value: 0 },
   uWind: { value: 0.08 }, // grows with scroll speed
-  uRimColor: { value: new Color('#ffd9b8') },
+  uRimColor: { value: new Color('#e6f0ff') },
   uRimStrength: { value: 0.45 },
 }
 

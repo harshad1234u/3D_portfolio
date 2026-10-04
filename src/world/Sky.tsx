@@ -28,7 +28,7 @@ const fragmentShader = /* glsl */ `
     vec3 col = mix(uHorizon, uTop, smoothstep(0.0, 0.55, h));
     col = mix(uBottom, col, smoothstep(-0.35, 0.02, h));
     float sd = max(dot(dir, uSunDir), 0.0);
-    col += uSunColor * (pow(sd, 900.0) * 1.2 + pow(sd, 14.0) * 0.3);
+    col += uSunColor * (pow(sd, 1400.0) * 0.6 + pow(sd, 40.0) * 0.12);
     // Crepuscular rays: soft angular streaks fanning out around the sun, slowly turning.
     vec3 t1 = normalize(cross(uSunDir, vec3(0.0, 1.0, 0.0)));
     vec3 t2 = cross(t1, uSunDir);
@@ -36,7 +36,7 @@ const fragmentShader = /* glsl */ `
     float ang = atan(dot(q, t2), dot(q, t1));
     float streaks = pow(0.5 + 0.5 * sin(ang * 11.0 + sin(ang * 4.0 + uTime * 0.05) * 2.5), 5.0);
     float near = smoothstep(0.55, 0.98, dot(dir, uSunDir)) * smoothstep(-0.15, 0.1, h);
-    col += uSunColor * streaks * near * 0.22 * uRays;
+    col += uSunColor * streaks * near * 0.09 * uRays;
     gl_FragColor = vec4(col, 1.0);
     #include <colorspace_fragment>
   }
@@ -78,7 +78,7 @@ const stars = (() => {
   geo.setAttribute('position', new BufferAttribute(pos, 3))
   return {
     geo,
-    mat: new PointsMaterial({ color: '#f6ebdd', size: 2.2, sizeAttenuation: false, transparent: true, depthWrite: false, fog: false }),
+    mat: new PointsMaterial({ color: '#eef4ff', size: 2.2, sizeAttenuation: false, transparent: true, depthWrite: false, fog: false }),
   }
 })()
 

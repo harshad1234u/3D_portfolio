@@ -16,6 +16,11 @@ const MAX_UPS = 2
 export const newMonitor = () => ({ age: 0, t: 0, n: 0, good: 0, ups: 0, downs: 0 })
 export type Monitor = ReturnType<typeof newMonitor>
 
+// Restart the grace period (after a recompile); keeps the up/down history.
+export function regrace(m: Monitor) {
+  m.age = m.t = m.n = m.good = 0
+}
+
 export function sampleFrame(m: Monitor, dt: number): 'down' | 'up' | null {
   if (dt > STALL) {
     m.t = 0
@@ -44,5 +49,12 @@ export function sampleFrame(m: Monitor, dt: number): 'down' | 'up' | null {
   return null
 }
 
-export const stepTier = (t: Tier, d: 'down' | 'up'): Tier =>
+// Integrated / mobile GPUs, judged from the renderer string the browser reports
+// (e.g. "ANGLE (Intel, Intel(R) UHD Graphics 620 Direct3D11 ...)"). They start on mid and are capped
+// there: high on Intel UHD measured ~50 fps, and stepping down from it hitches for 2–6 s.
+// ponytail: name heuristic; masked renderer strings fall through to the adaptive monitor.
+export const isIntegratedGpu = (renderer: string) =>
+  /intel|uhd|iris|hd graphics|radeon\(tm\) graphics|vega \d+ graphics|mali|adreno|powervr/i.test(renderer)
+
+export const stepTier =(t: Tier, d: 'down' | 'up'): Tier =>
   TIERS[Math.min(TIERS.length - 1, Math.max(0, TIERS.indexOf(t) + (d === 'up' ? 1 : -1)))]

@@ -2,13 +2,7 @@ import type { ReactNode } from 'react'
 import type { Category, Project } from '../data/content'
 
 // Generated cover used until a real screenshot exists at public/projects/<slug>.png.
-const GRADIENT: Record<Category, string> = {
-  ai: 'linear-gradient(135deg, #7c6baf, #f2a3a0)',
-  security: 'linear-gradient(135deg, #1e1b4b, #7c6baf)',
-  web: 'linear-gradient(135deg, #d9774f, #ffc9a3)',
-  systems: 'linear-gradient(135deg, #1b1a2e, #9db59a)',
-}
-
+// Gradients are theme tokens (--cover-<category> in tokens.css).
 const MOTIF: Record<Category, ReactNode> = {
   // orbiting nodes
   ai: (
@@ -57,7 +51,7 @@ const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >
 export default function ProjectCover({ project }: { project: Project }) {
   const h = hash(project.slug)
   return (
-    <div className="cover" style={{ background: GRADIENT[project.category] }} aria-hidden="true">
+    <div className="cover" style={{ background: `var(--cover-${project.category})` }} aria-hidden="true">
       <svg
         className="cover-motif"
         viewBox="0 0 100 100"

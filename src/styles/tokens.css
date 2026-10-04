@@ -1,18 +1,75 @@
+/* Theme A "Blue hour" (default). Theme B overrides the same tokens below; switch with ?theme=b. */
 :root {
-  /* Dusk Voyage palette — see PLAN.md §3 */
-  --sky-apricot: #ffc9a3;
-  --sky-rose: #f2a3a0;
-  --sky-violet: #7c6baf;
-  --sky-indigo: #1e1b4b;
-  --clay: #d9774f;
-  --paper: #f6ebdd;
-  --sage: #9db59a;
-  --brass: #e2b15c;
-  --ink: #1b1a2e;
+  --bg: #0b1020;
+  --hero-end: #1b2d57;
+  /* Panel surface. Low/mid tiers: near-opaque, no backdrop filter (blurring the live canvas cost
+     ~20 fps on integrated GPUs). High tier: true frosted glass, see the data-quality rules below. */
+  --surface: rgb(15 23 42 / 0.92);
+  --surface-glass: rgb(15 23 42 / 0.72);
+  --surface-fallback: rgb(15 23 42 / 0.95); /* high tier without backdrop-filter support */
+  --surface-raised: rgb(30 41 59 / 0.55);
+  --border: rgb(148 163 184 / 0.18);
+  --text: #f1f5f9;
+  --text-2: #a8b3c7;
+  --accent: #4f8cff;
+  --accent-hover: #7aa7ff;
+  --accent-soft: rgb(79 140 255 / 0.14);
+  --accent-line: rgb(79 140 255 / 0.4);
+  --accent-2: #2dd4bf;
+  --on-accent: #0b1020;
+  --loader-bg: radial-gradient(ellipse at 50% 120%, #3a5ba0 0%, #16264a 45%, #0b1020 80%);
+  /* Generated project covers, by category. Lightest stops stay dark enough for white text. */
+  --cover-ai: linear-gradient(135deg, #0b1020, #2f5fc4);
+  --cover-security: linear-gradient(135deg, #0b1020, #1e3a8a);
+  --cover-web: linear-gradient(135deg, #0b1020, #0f766e);
+  --cover-systems: linear-gradient(135deg, #0b1020, #475569);
 
-  --font-display: 'Fraunces Variable', Georgia, serif;
-  --font-ui: 'Instrument Sans Variable', system-ui, sans-serif;
+  --glass: none;
 
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* One radius and spacing scale */
+  --radius: 14px;
+  --radius-sm: 8px;
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
   --gutter: clamp(16px, 4vw, 48px);
   color-scheme: dark;
+}
+
+/* Theme B "Graphite and teal" */
+:root[data-theme='b'] {
+  --bg: #0f1419;
+  --hero-end: #1f2a33;
+  --surface: rgb(22 27 34 / 0.92);
+  --surface-glass: rgb(22 27 34 / 0.74);
+  --surface-fallback: rgb(22 27 34 / 0.95);
+  --surface-raised: rgb(48 54 61 / 0.45);
+  --border: rgb(160 174 192 / 0.16);
+  --text: #f0f6fc;
+  --text-2: #9ba7b4;
+  --accent: #2dd4bf;
+  --accent-hover: #5eead4;
+  --accent-soft: rgb(45 212 191 / 0.12);
+  --accent-line: rgb(45 212 191 / 0.4);
+  --accent-2: #4f8cff;
+  --on-accent: #0f1419;
+  --loader-bg: radial-gradient(ellipse at 50% 120%, #2b3b45 0%, #161d24 45%, #0f1419 80%);
+  --cover-ai: linear-gradient(135deg, #0f1419, #0f766e);
+  --cover-security: linear-gradient(135deg, #0f1419, #3f4a54);
+  --cover-web: linear-gradient(135deg, #0f1419, #155e75);
+  --cover-systems: linear-gradient(135deg, #0f1419, #2f5fc4);
+}
+
+/* High tier: frosted glass. The backdrop is dimmed so text keeps >= 4.5:1 even over white cloud. */
+:root[data-quality='high'] {
+  --surface: var(--surface-glass);
+  --glass: blur(16px) saturate(140%) brightness(0.3);
 }

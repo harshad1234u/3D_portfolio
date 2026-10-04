@@ -45,3 +45,21 @@ Approved answers to `PLAN.md` §0, plus changes. Where this file and `PLAN.md` d
   - Shadows re-render every other frame (motion is slow enough to hide it), always on frames where the map is missing.
   - Static landmark parts are merged into one mesh per material at mount (`Static.tsx`): draw calls 240 → 163.
   - Adaptive quality steps down below 52 fps (target 60) and never steps back up after a step down.
+
+## M2.6 professional restyle
+This section replaces the visual direction of `PLAN.md` §3 (palette, type, surfaces). The world, camera and motion are unchanged.
+- **Themes:** two token sets in `src/styles/tokens.css` and `src/world/palette.ts`, switched with `?theme=a|b`.
+  - A "Blue hour" (default): sky goes from pale blue at the Hero (#BFD7FF → #7FA8E8) through steel blue (#3A5BA0) to navy at Contact (#0B1020). Text #F1F5F9 / #A8B3C7, accent #4F8CFF, teal #2DD4BF used sparingly.
+  - B "Graphite and teal": graphite (#0F1419) and charcoal surfaces, teal accent #2DD4BF, cooler near-white text.
+  - No pink, rose, orange, apricot or gold anywhere. Islands are slate rock with sage-teal grass. Windows and lanterns (#FFD58A) are the only warm light.
+- **Type:** Inter (headings and body) and JetBrains Mono (index numbers, tags, dates), self-hosted through fontsource. No Google requests. Fraunces and Instrument Sans removed.
+- **Surfaces:** one radius scale (14 px panels and cards, 8 px buttons and tags) and one 4-based spacing scale.
+- **Frosted glass is high tier only.** Blurring the live WebGL canvas cost about 20 fps on low at 1440 on Intel UHD (90 vs 111 fps).
+  - High tier: `rgba(15,23,42,0.72)` with `blur(16px) saturate(140%) brightness(0.3)`. The backdrop dimming keeps text ≥ 4.5:1 even over white cloud.
+  - Low and mid tiers: the same colour at 0.92 opacity with no backdrop filter, which gives the same worst-case contrast.
+- **Contrast:** measured on the rendered page. All text is ≥ 4.5:1, and large text is ≥ 3:1 at day, dusk and night positions, in both themes, both views, 1440 and 360 px, and on mid and high tiers.
+- **Integrated GPUs** (Intel UHD/Iris, AMD Radeon(TM) Graphics, mobile GPUs) are recognised from the WebGL renderer string. They start on mid and are capped at mid. `?quality=` still pins a tier.
+- **Adaptive monitor:**
+  - It restarts its grace period when the scene recompiles (postprocessing arrives, tier switch), so one-off shader-compile hitches are not counted as a slow device.
+  - Panel reveals animate opacity and position only, with no CSS blur. The project grid reveals as one block; 17 separately animated cards caused a one-time dip that made the monitor step down.
+- **OG image:** `public/og.png` (1200×630) is rendered from the real hero scene with the site's own fonts, then metadata is stripped. The OG/Twitter meta tags need the final absolute URL, so they are added in M8.

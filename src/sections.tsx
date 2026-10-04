@@ -17,11 +17,11 @@ export const SECTIONS: SectionDef[] = [
     id: 'top',
     title: site.name,
     body: () => (
-      <>
+      <div className="hero-card">
         <h1 id="top-title">{site.name}</h1>
         <p className="hero-role">{site.role}</p>
         <p className="hero-college">Computer Science and Engineering · {site.college}</p>
-      </>
+      </div>
     ),
   },
   {
@@ -99,7 +99,12 @@ export const SECTIONS: SectionDef[] = [
             <h3>{e.role}</h3>
             <p className="meta">
               {e.org}
-              {e.date && ` · ${e.date}`}
+              {e.date && (
+                <>
+                  {' · '}
+                  <span className="mono">{e.date}</span>
+                </>
+              )}
             </p>
             {e.summary && <p>{e.summary}</p>}
           </li>
@@ -150,11 +155,11 @@ export const SECTIONS: SectionDef[] = [
     body: () => (
       <>
         <EmailReveal />
-        <h3>Find me online</h3>
+        <h3 className="contact-sub">Find me online</h3>
         <ul className="profiles">
           {profiles.map((p) => (
             <li key={p.id}>
-              <a href={p.url} target="_blank" rel="noopener noreferrer">
+              <a className="btn-outline" href={p.url} target="_blank" rel="noopener noreferrer">
                 {p.label}
                 <span className="visually-hidden"> (opens in a new tab)</span>
                 <span aria-hidden="true"> ↗</span>
@@ -172,7 +177,14 @@ export function Section({ def, className }: { def: SectionDef; className: string
   const hero = def.id === 'top'
   return (
     <section id={def.id} className={className} aria-labelledby={`${def.id}-title`} tabIndex={-1}>
-      {!hero && <h2 id={`${def.id}-title`}>{def.title}</h2>}
+      {!hero && (
+        <>
+          <span className="eyebrow mono" aria-hidden="true">
+            {String(SECTIONS.indexOf(def)).padStart(2, '0')}
+          </span>
+          <h2 id={`${def.id}-title`}>{def.title}</h2>
+        </>
+      )}
       {def.body()}
     </section>
   )

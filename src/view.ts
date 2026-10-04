@@ -20,13 +20,16 @@ export function savePref(mode: View['mode']) {
   }
 }
 
+// GPU name reported by the browser (empty if masked); the world uses it to pick a start tier.
+export let gpuRenderer = ''
+
 // 'software' = WebGL runs on the CPU (SwiftShader/llvmpipe), far too slow for the world.
 export function webglStatus(): 'ok' | 'software' | 'unavailable' {
   try {
     const gl = document.createElement('canvas').getContext('webgl2', { failIfMajorPerformanceCaveat: true })
     if (!gl) return document.createElement('canvas').getContext('webgl2') ? 'software' : 'unavailable'
     const ext = gl.getExtension('WEBGL_debug_renderer_info')
-    const renderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : ''
+    const renderer = (gpuRenderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '')
     gl.getExtension('WEBGL_lose_context')?.loseContext()
     return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(renderer) ? 'software' : 'ok'
   } catch {

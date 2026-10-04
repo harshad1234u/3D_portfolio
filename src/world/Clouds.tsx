@@ -2,12 +2,12 @@ import { useFrame } from '@react-three/fiber'
 import { useLayoutEffect, useRef } from 'react'
 import { Color, Group, IcosahedronGeometry, InstancedMesh, Mesh, Object3D, PlaneGeometry, ShaderMaterial } from 'three'
 import { bakeAO, clay, U } from './materials'
-import { palette } from './palette'
+import { C, palette } from './palette'
 import { rng } from './rng'
 
 // ---------- cloud banks: three depth bands that parallax naturally as the camera travels ----------
 
-const puff = bakeAO(new IcosahedronGeometry(1, 1), 0.3, { top: '#fff8f0', bottom: '#dcc6d8' })
+const puff = bakeAO(new IcosahedronGeometry(1, 1), 0.3, { top: C.cloudTop, bottom: C.cloudBottom })
 const puffMat = clay('#ffffff', { vertexColors: true, rim: 1.6 })
 
 type Band = { clusters: number; xMin: number; xMax: number; yMin: number; yMax: number; scale: number }
@@ -88,7 +88,7 @@ const seaShader = (opacity: number, scale: number) =>
       }`,
   })
 
-const WHITE = new Color('#fff4ea')
+const WHITE = new Color('#f2f6ff')
 const seas = [seaShader(0.95, 0.018), seaShader(0.55, 0.03)]
 const seaGeo = new PlaneGeometry(900, 900).rotateX(-Math.PI / 2)
 

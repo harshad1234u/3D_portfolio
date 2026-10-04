@@ -21,7 +21,7 @@ export default function ProjectCard({ project, index, total }: { project: Projec
         )}
       </div>
       <div className="card-body">
-        <p className="card-index">
+        <p className="card-index mono">
           {String(index + 1).padStart(2, '0')} / {total}
         </p>
         <h3 id={`project-${project.slug}-title`}>{project.name}</h3>

@@ -11,15 +11,69 @@ html {
 body {
   margin: 0;
   min-height: 100svh;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-ui);
-  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(2.75rem, 8vw, 5.5rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+h2 {
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+}
+/* Accent underline under section headings. */
+h2::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin-top: var(--s3);
+  border-radius: 2px;
+  background: var(--accent);
+}
+h3 {
+  font-size: 1.1875rem;
+  letter-spacing: -0.01em;
+}
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+a:hover {
+  color: var(--accent-hover);
 }
 
 :focus-visible {
-  outline: 2px solid var(--brass);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
+}
+
+/* Small technical labels: index numbers, tags, dates. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
 }
 
 @media (prefers-reduced-motion: reduce) {
